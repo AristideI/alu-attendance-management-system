@@ -58,38 +58,46 @@ def process_images(image_dir, target_size=(64, 64)):
 def retrain_model(
     uploaded_zip_file, model_save_path="../models/brain_tumor_model.keras"
 ):
-    """
-    Accepts an uploaded ZIP file, extracts it, processes the images, and retrains the existing model.
+    try:
+        # Save the file locally to process it
+        with open("uploaded_file.zip", "wb") as f:
+            shutil.copyfileobj(uploaded_zip_file, f)
 
-    Parameters:
-        - uploaded_zip_file: File-like object (e.g., Flask file upload)
-        - model_save_path: str, path to save the retrained model
+        # Step 1: Unzip the data
+        extract_dir = "temp_data"
+        if not os.path.exists(extract_dir):
+            os.makedirs(extract_dir)
+        unzip_file("uploaded_file.zip", extract_to_path=extract_dir)
 
-    Returns:
-        - None
-    """
-    # Step 1: Unzip the data
-    extract_dir = "temp_data"
-    unzip_file(uploaded_zip_file, extract_to_path=extract_dir)
+        # Check if the extraction was successful
+        if not os.path.exists(extract_dir):
+            raise FileNotFoundError(
+                f"Extraction failed, directory {extract_dir} not found."
+            )
 
-    # Step 2: Process the images in the extracted folder
-    images, labels = process_images(extract_dir)
+        # Step 2: Process the images in the extracted folder
+        images, labels = process_images(extract_dir)
 
-    # Step 3: Prepare the data for training
-    images = images.reshape((-1, 64, 64, 1))  # Ensure the correct shape for the model
+        # Step 3: Prepare the data for training
+        images = images.reshape(
+            (-1, 64, 64, 1)
+        )  # Ensure the correct shape for the model
 
-    # Convert labels to categorical (one-hot encoding)
-    labels = tf.keras.utils.to_categorical(labels, num_classes=2)
+        # Convert labels to categorical (one-hot encoding)
+        labels = tf.keras.utils.to_categorical(labels, num_classes=2)
 
-    # Step 4: Load the pre-trained model
-    model = load_model("../models/brain_tumor_model.keras")
+        # Step 4: Load the pre-trained model
+        model = load_model(model_save_path)
 
-    # Step 5: Fine-tune the pre-trained model with new data
-    model.fit(images, labels, epochs=10, batch_size=32)
+        # Step 5: Fine-tune the pre-trained model with new data
+        model.fit(images, labels, epochs=10, batch_size=32)
 
-    # Step 6: Save the retrained model
-    model.save(model_save_path)
-    print(f"Retrained model saved to {model_save_path}")
+        # Step 6: Save the retrained model
+        model.save(model_save_path)
+        print(f"Retrained model saved to {model_save_path}")
 
-    # Clean up extracted data
-    shutil.rmtree(extract_dir)
+        # Clean up extracted data
+        shutil.rmtree(extract_dir)
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
