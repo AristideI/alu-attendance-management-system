@@ -76,7 +76,7 @@ def retrain_model(
             )
 
         # Step 2: Process the images in the extracted folder
-        images, labels = process_images(extract_dir)
+        images, labels = process_images("temp_data/retrain")
 
         # Step 3: Prepare the data for training
         images = images.reshape(

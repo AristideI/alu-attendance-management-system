@@ -1,5 +1,6 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from prediction import load_trained_model, predict_image
 import os
 import shutil
@@ -7,6 +8,14 @@ from retrain import retrain_model
 
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Change "*" to a list of allowed origins in production.
+    allow_credentials=True,
+    allow_methods=["*"],  # Specify allowed methods like ["GET", "POST"] if needed.
+    allow_headers=["*"],  # Specify allowed headers if necessary.
+)
 
 MODEL_PATH = "../models/brain_tumor_model.keras"  # Path to your retrained model
 

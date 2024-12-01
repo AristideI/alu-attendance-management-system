@@ -13,6 +13,7 @@ export default function Header() {
         <CustomLink href="/" text="Home" />
         <CustomLink href="/predict" text="Predict" />
         <CustomLink href="/visualise" text="Visualise" />
+        <CustomLink href="/retrain" text="Retrain" />
         <CustomLink href="#blogs" text="Blogs" isHash />
         <CustomLink href="#testimonials" text="Testimonial" isHash />
         <CustomButton
