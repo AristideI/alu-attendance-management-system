@@ -18,3 +18,4 @@ tensorflow==2.16.2
 tensorflow-io-gcs-filesystem==0.37.1
 transformers==4.23.0
 uvicorn==0.30.3
+keras_preprocessing
